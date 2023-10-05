@@ -118,7 +118,7 @@ class _HomePageState extends State<HomePage> {
               MaterialButton(
                 onPressed: () {
                   Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => Placeholder()));
+                      MaterialPageRoute(builder: (context) => TTTPage()));
                 },
                 color: Colors.purple,
                 child: const Text('Tic Tac Toe'),
@@ -126,7 +126,7 @@ class _HomePageState extends State<HomePage> {
               MaterialButton(
                 onPressed: () {
                   Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => Placeholder()));
+                      MaterialPageRoute(builder: (context) => HighLowPage()));
                 },
                 color: Colors.purple,
                 child: const Text('High Low'),
@@ -159,6 +159,208 @@ class _HomePageState extends State<HomePage> {
                 child: const Text('Logout'),
               ),
               const SizedBox(height: 30),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class TTTPage extends StatefulWidget {
+  TTTPage({super.key});
+
+  @override
+  State<TTTPage> createState() => _TTTPageState();
+}
+
+class _TTTPageState extends State<TTTPage> {
+  //2d array to hold the Xs and Os
+  List<String> tttGrid = ['0', '1', '2', '3', '4', '5', '6', '7', '8'];
+  //how many of the boxes have been filled also used to determine X or Os turn
+  var tttBoxes = 0;
+  //games won by player
+  var tttWins = 0;
+  //which symbol is player using?
+  String playerSymbol = 'X';
+  //has the game been won?
+  bool winState = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.lightBlue,
+      appBar: AppBar(
+        backgroundColor: Colors.lightBlue,
+        title: const Center(child: Text("Tic Tac Toe")),
+      ),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: <Widget>[
+              Text("Wins: $tttWins",
+                  style: const TextStyle(
+                    color: Colors.yellow,
+                    fontSize: 20,
+                  )),
+              //board clearing button for testing purposes ONLY
+              MaterialButton(
+                onPressed: () {
+                  _clearGrid();
+                },
+                color: Colors.red,
+                child: const Text('Clear Board'),
+              ),
+              Expanded(
+                child: GridView.builder(
+                    itemCount: 9,
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 3),
+                    itemBuilder: (BuildContext context, int index) {
+                      return GestureDetector(
+                        onTap: () {
+                          _squarePressed(index);
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                              border: Border.all(color: Colors.purple)),
+                          child: Center(
+                            child: Text(
+                              tttGrid[index],
+                              style:
+                                  TextStyle(color: Colors.black, fontSize: 50),
+                            ),
+                          ),
+                        ),
+                      );
+                    }),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _squarePressed(int index) {
+    setState(() {
+      if (tttGrid[index] == '') {
+        if (tttBoxes % 2 == 0) {
+          tttGrid[index] = 'X';
+          tttBoxes++;
+        } else if (tttBoxes % 2 == 1) {
+          tttGrid[index] = 'O';
+          tttBoxes++;
+        }
+        _tttWinCheck();
+
+        //after user moves, if the game hasn't been won already, computer gets to pick a random unfilled square next
+        if (!winState) {
+          while (tttGrid[index] != '') {
+            index = Random().nextInt(9);
+          }
+          if (tttBoxes % 2 == 0) {
+            tttGrid[index] = 'X';
+            tttBoxes++;
+          } else if (tttBoxes % 2 == 1) {
+            tttGrid[index] = 'O';
+            tttBoxes++;
+          }
+          _tttWinCheck();
+        }
+        winState = false;
+      }
+    });
+  }
+
+  //checks for a win after each square gets filled
+  void _tttWinCheck() {
+    if (tttGrid[0] == tttGrid[1] &&
+        tttGrid[1] == tttGrid[2] &&
+        tttGrid[2] != '') {
+      _awardWin(tttGrid[0]);
+    }
+    if (tttGrid[3] == tttGrid[4] &&
+        tttGrid[4] == tttGrid[5] &&
+        tttGrid[5] != '') {
+      _awardWin(tttGrid[3]);
+    }
+    if (tttGrid[6] == tttGrid[7] &&
+        tttGrid[7] == tttGrid[8] &&
+        tttGrid[8] != '') {
+      _awardWin(tttGrid[6]);
+    }
+    if (tttGrid[0] == tttGrid[3] &&
+        tttGrid[3] == tttGrid[6] &&
+        tttGrid[6] != '') {
+      _awardWin(tttGrid[0]);
+    }
+    if (tttGrid[1] == tttGrid[4] &&
+        tttGrid[4] == tttGrid[7] &&
+        tttGrid[7] != '') {
+      _awardWin(tttGrid[1]);
+    }
+    if (tttGrid[2] == tttGrid[5] &&
+        tttGrid[5] == tttGrid[8] &&
+        tttGrid[8] != '') {
+      _awardWin(tttGrid[2]);
+    }
+    if (tttGrid[0] == tttGrid[4] &&
+        tttGrid[4] == tttGrid[8] &&
+        tttGrid[8] != '') {
+      _awardWin(tttGrid[0]);
+    }
+    if (tttGrid[2] == tttGrid[4] &&
+        tttGrid[4] == tttGrid[6] &&
+        tttGrid[6] != '') {
+      _awardWin(tttGrid[2]);
+    }
+  }
+
+  void _awardWin(String winningPlayer) {
+    print("$winningPlayer won the game!");
+    if (winningPlayer == playerSymbol) {
+      tttWins++;
+    }
+    winState = true;
+    _clearGrid();
+  }
+
+  //clears the grid of all entries
+  void _clearGrid() {
+    setState(() {
+      for (int i = 0; i < 9; i++) {
+        tttGrid[i] = '';
+      }
+    });
+
+    tttBoxes = 0;
+  }
+}
+
+class HighLowPage extends StatefulWidget {
+  HighLowPage({super.key});
+
+  @override
+  State<HighLowPage> createState() => _HighLowPageState();
+}
+
+class _HighLowPageState extends State<HighLowPage> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.lightBlue,
+      appBar: AppBar(
+        backgroundColor: Colors.lightBlue,
+        title: const Center(child: Text("High Low")),
+      ),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: <Widget>[
+              Text("welcome to High Low"),
             ],
           ),
         ),

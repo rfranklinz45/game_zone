@@ -256,7 +256,7 @@ class _TTTPageState extends State<TTTPage> {
         _tttWinCheck();
 
         //after user moves, if the game hasn't been won already, computer gets to pick a random unfilled square next
-        if (!winState) {
+        if (!winState && tttBoxes < 9) {
           while (tttGrid[index] != '') {
             index = Random().nextInt(9);
           }
@@ -280,41 +280,38 @@ class _TTTPageState extends State<TTTPage> {
         tttGrid[1] == tttGrid[2] &&
         tttGrid[2] != '') {
       _awardWin(tttGrid[0]);
-    }
-    if (tttGrid[3] == tttGrid[4] &&
+    } else if (tttGrid[3] == tttGrid[4] &&
         tttGrid[4] == tttGrid[5] &&
         tttGrid[5] != '') {
       _awardWin(tttGrid[3]);
-    }
-    if (tttGrid[6] == tttGrid[7] &&
+    } else if (tttGrid[6] == tttGrid[7] &&
         tttGrid[7] == tttGrid[8] &&
         tttGrid[8] != '') {
       _awardWin(tttGrid[6]);
-    }
-    if (tttGrid[0] == tttGrid[3] &&
+    } else if (tttGrid[0] == tttGrid[3] &&
         tttGrid[3] == tttGrid[6] &&
         tttGrid[6] != '') {
       _awardWin(tttGrid[0]);
-    }
-    if (tttGrid[1] == tttGrid[4] &&
+    } else if (tttGrid[1] == tttGrid[4] &&
         tttGrid[4] == tttGrid[7] &&
         tttGrid[7] != '') {
       _awardWin(tttGrid[1]);
-    }
-    if (tttGrid[2] == tttGrid[5] &&
+    } else if (tttGrid[2] == tttGrid[5] &&
         tttGrid[5] == tttGrid[8] &&
         tttGrid[8] != '') {
       _awardWin(tttGrid[2]);
-    }
-    if (tttGrid[0] == tttGrid[4] &&
+    } else if (tttGrid[0] == tttGrid[4] &&
         tttGrid[4] == tttGrid[8] &&
         tttGrid[8] != '') {
       _awardWin(tttGrid[0]);
-    }
-    if (tttGrid[2] == tttGrid[4] &&
+    } else if (tttGrid[2] == tttGrid[4] &&
         tttGrid[4] == tttGrid[6] &&
         tttGrid[6] != '') {
       _awardWin(tttGrid[2]);
+    } else if (tttBoxes == 9) {
+      print("game was a draw!");
+      winState = true;
+      _clearGrid();
     }
   }
 

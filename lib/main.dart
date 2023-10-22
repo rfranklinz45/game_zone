@@ -17,6 +17,22 @@ class MyApp extends StatelessWidget {
   }
 }
 
+class AppUser {
+  String name = '';
+  String pass = '';
+  int hlScore = 0;
+  int flipitScore = 0;
+  int TTTScore = 0;
+
+  AppUser(String n, String p, [int hl = 0, int f = 0, int t = 0]) {
+    name = n;
+    pass = p;
+    hlScore = hl;
+    flipitScore = f;
+    TTTScore = t;
+  }
+}
+
 class LoginPage extends StatefulWidget {
   LoginPage({super.key});
 
@@ -28,6 +44,10 @@ class _LoginPageState extends State<LoginPage> {
   final _usernameController = TextEditingController();
 
   final _passwordController = TextEditingController();
+  AppUser robert = AppUser("Robert", "letmein");
+  AppUser admin = AppUser("admin", "login");
+  AppUser gamer = AppUser("Gamer", "password", 100, 100, 100);
+  late List<AppUser> accounts = [robert, admin, gamer];
 
   @override
   Widget build(BuildContext context) {
@@ -68,21 +88,34 @@ class _LoginPageState extends State<LoginPage> {
                   icon: Icon(Icons.lock),
                 ),
               ),
+              const SizedBox(height: 10),
               //login button updates the username and password entries
               //for now, does not perform authentication, just moves to the next screen
               MaterialButton(
                 onPressed: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => HomePage()));
+                  bool validated = false;
+                  for (int i = 0; i < accounts.length; i++) {
+                    if (_usernameController.text == accounts[i].name &&
+                        _passwordController.text == accounts[i].pass) {
+                      validated = true;
+                    }
+                  }
+                  if (validated) {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => HomePage()));
+                  }
                 },
                 color: Colors.red,
                 child: const Text('Login'),
               ),
               const SizedBox(height: 30),
-              //new users button (does nothing currently)
+              //new users button creates a new account
               MaterialButton(
                 color: Colors.white,
-                onPressed: () {},
+                onPressed: () {
+                  accounts.add(AppUser(
+                      _usernameController.text, _passwordController.text));
+                },
                 child: const Text('Create account'),
               )
             ],
@@ -123,6 +156,7 @@ class _HomePageState extends State<HomePage> {
                 color: Colors.purple,
                 child: const Text('Tic Tac Toe'),
               ),
+              const SizedBox(height: 10),
               MaterialButton(
                 onPressed: () {
                   Navigator.push(context,
@@ -131,6 +165,7 @@ class _HomePageState extends State<HomePage> {
                 color: Colors.purple,
                 child: const Text('High Low'),
               ),
+              const SizedBox(height: 10),
               MaterialButton(
                 onPressed: () {
                   Navigator.push(context,
@@ -139,16 +174,17 @@ class _HomePageState extends State<HomePage> {
                 color: Colors.purple,
                 child: const Text('Flip It!'),
               ),
+              const SizedBox(height: 10),
 
               //user scores button
-              MaterialButton(
-                onPressed: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => Placeholder()));
-                },
-                color: Colors.blue,
-                child: const Text('View your scores'),
-              ),
+              // MaterialButton(
+              //   onPressed: () {
+              //     Navigator.push(context,
+              //         MaterialPageRoute(builder: (context) => Placeholder()));
+              //   },
+              //   color: Colors.blue,
+              //   child: const Text('View your scores'),
+              // ),
               //logout button returns to login screen
               MaterialButton(
                 onPressed: () {
@@ -176,7 +212,7 @@ class TTTPage extends StatefulWidget {
 
 class _TTTPageState extends State<TTTPage> {
   //2d array to hold the Xs and Os
-  List<String> tttGrid = ['0', '1', '2', '3', '4', '5', '6', '7', '8'];
+  List<String> tttGrid = ['', '', '', '', '', '', '', '', ''];
   //how many of the boxes have been filled also used to determine X or Os turn
   var tttBoxes = 0;
   //games won by player
@@ -344,6 +380,10 @@ class HighLowPage extends StatefulWidget {
 }
 
 class _HighLowPageState extends State<HighLowPage> {
+  var hlWins = 0;
+  bool roll = false;
+  var die = 4;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -357,7 +397,35 @@ class _HighLowPageState extends State<HighLowPage> {
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: <Widget>[
-              Text("welcome to High Low"),
+              Text("Wins: $hlWins",
+                  style: const TextStyle(
+                    color: Colors.purple,
+                    fontSize: 20,
+                  )),
+              const Text("4, 5, and 6 WIN!",
+                  style: const TextStyle(
+                    color: Colors.red,
+                    fontSize: 30,
+                  )),
+              Padding(
+                padding: const EdgeInsets.all(30.0),
+                child: Image.asset('media/graphics/die$die.png'),
+              ),
+              MaterialButton(
+                onPressed: () {
+                  if (roll == false) {
+                    setState(() {
+                      //rollDie(1);
+                      die = Random().nextInt(6) + 1;
+                      if (die > 3) {
+                        hlWins++;
+                      }
+                    });
+                  }
+                },
+                color: Colors.amber,
+                child: const Text('Roll The Die!'),
+              ),
             ],
           ),
         ),
